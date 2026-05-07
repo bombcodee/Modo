@@ -36,16 +36,18 @@ Modo/
 ## 2. 파일별 책임
 
 ### 2-1. `index.html`
-**책임**: 앱의 모든 것 — HTML 마크업, 스타일, 스크립트가 한 파일에 들어 있다.
+**책임**: 앱의 모든 것 — HTML 마크업, 스타일, 스크립트가 한 파일에 들어 있다. (현재 935줄)
 
 | 섹션 | 줄(대략) | 내용 |
 |------|---------|------|
-| `<head>` 메타 | 1–26 | PWA 메타태그(manifest, theme-color, apple-touch-icon, favicon) |
-| `<style>` | 28–357 | 디자인 토큰(`:root` CSS 변수) + 컴포넌트 스타일(.header / .time-block / .card / .warning-box / .check-btn / .reset-btn) + 키프레임 + 모바일 미디어쿼리 |
-| `<body>` 마크업 | 359–514 | 헤더 → 5개 시간 블록(time-block) → 주의사항(warning-box) → 푸터(footer + reset-btn) |
-| `<script>` | 516–572 | `toggleCheck` / `resetAll` / `saveState` / `loadState` + 날짜 비교 자동 초기화 + Service Worker 등록 |
+| `<head>` 메타 | 1–21 | PWA 메타태그(manifest, theme-color, apple-touch-icon, favicon) + Google Fonts(Fraunces / Noto Serif KR / DM Mono) preconnect & link |
+| `<style>` | 22–613 | 디자인 토큰 4단(`:root` CSS 변수: paper / ink / botanical / clay·ochre·night) + 컴포넌트 스타일(.header / .meta-row / .progress-row / .time-block / .card / .warning-group / .reset-btn) + 애니메이션 키프레임(fadeIn / fadeUp / dust) + 모바일 미디어쿼리 + `prefers-reduced-motion` 존중 |
+| `<body>` 마크업 | 616–787 | 헤더(eyebrow + 한국어 제목 + 부제 + 메타 줄 + 진행률 도트) → 5개 시간 블록(i.~v. 로마숫자 챕터) → 주의 박스(✕ 피하기 / ✓ 돕기 두 갈래) → 푸터(reset-btn) |
+| `<script>` | 788–932 | `updateDayNumber` / `updateProgress` / `spawnDust` / `toggleCheck` / `resetAll` / `saveState` / `loadState` + 날짜 비교 자동 초기화 + 카드 클릭 이벤트 위임(`addEventListener`) + Service Worker 등록 |
 
 **현재 한계**: HTML/CSS/JS가 한 파일에 섞여 있고, 영양제 데이터가 `<div class="card">`로 마크업에 하드코딩되어 있다 — [PRINCIPLE.md](PRINCIPLE.md) §0(로봇 구조)·§1-2(책임 분리) 위반. 분리 작업은 [LOADMAP.md](LOADMAP.md)의 리팩터링 항목 참조.
+
+**디자인 컨셉**: Garden Notes — 따뜻한 페이퍼 톤(크림/세이지/테라코타 깊이감)을 유지하면서 일자 카운터·진행률 도트·로마숫자 챕터·dust 파티클 인터랙션으로 책 읽는 듯한 정원 일지 느낌을 만든다. 자세한 결정 맥락은 [MEMORY.md](MEMORY.md) 참조.
 
 ### 2-2. `manifest.json`
 **책임**: PWA 매니페스트. 앱 이름, 아이콘 세트, 시작 URL, 표시 모드(`standalone`), 테마/배경색을 브라우저에 알린다.
@@ -138,13 +140,16 @@ LOADMAP / PRINCIPLE / MEMORY / package 끼리는 직접 링크 가능
 
 | 함수 | 의존 | 호출처 |
 |------|------|--------|
-| `toggleCheck(btn, cardId)` | DOM(btn, cardId), `saveState` | `<div class="check-btn" onclick="...">` 인라인 |
-| `resetAll()` | DOM(`.check-btn`, `.card`), localStorage | `<button class="reset-btn" onclick="...">` 인라인 |
-| `saveState()` | DOM(`.check-btn`), localStorage | `toggleCheck` |
-| `loadState()` | DOM(`.check-btn`, `.card`), localStorage | 페이지 로드 시 (날짜 동일하면) |
-| 날짜 비교 블록 | localStorage, `Date` | 페이지 로드 시 즉시 실행 |
+| `toggleCheck(cardEl)` | DOM(card), `saveState`, `updateProgress`, `spawnDust` | 카드 click 이벤트 (위임, `addEventListener`) |
+| `resetAll()` | DOM(`.card`), localStorage, `updateProgress` | `#reset-btn` click (`addEventListener`) |
+| `saveState()` | DOM(`.card`), localStorage | `toggleCheck` |
+| `loadState()` | DOM(`.card`), localStorage | 페이지 로드 시 (날짜 동일하면) |
+| `updateProgress()` | DOM(`.card`, `.progress-dot`, `#progress-now`) | 페이지 로드, 토글, 리셋 시 |
+| `updateDayNumber()` | localStorage(`startDate`), `Date` | 페이지 로드 즉시 |
+| `spawnDust(cardEl)` | DOM(body), 카드 위치 | 체크 시(toggleCheck) |
+| 날짜 비교 블록 | localStorage(`scheduleDate`), `Date` | 페이지 로드 시 즉시 실행 |
 
-이 결합 구조는 [PRINCIPLE.md](PRINCIPLE.md) §0/§1을 위반한다 — [LOADMAP.md](LOADMAP.md)의 모듈 분리 항목에서 다룬다.
+인라인 `onclick`은 모두 제거되어 [PRINCIPLE.md](PRINCIPLE.md) §5 안티패턴을 해소했다. 다만 데이터·UI·Storage 책임이 한 파일에 섞여 있는 [PRINCIPLE.md](PRINCIPLE.md) §0/§1 위반은 여전히 남아 있어 — [LOADMAP.md](LOADMAP.md)의 모듈 분리 항목에서 다룬다.
 
 ### 3-4. 목표 모듈 구조 (리팩터링 후 — 미구현)
 
@@ -190,18 +195,22 @@ Modo/
 3. `saveState`가 모든 체크박스를 순회해 인덱스 → boolean 객체를 만들고 `localStorage`에 JSON 직렬화
 
 ### 4-3. "오늘 체크 초기화" 클릭 시
-1. 인라인 `onclick="resetAll()"`
-2. 모든 `.check-btn`/.card에서 `checked`/`checked-card` 클래스 제거
+1. `resetAll()` 호출 — `addEventListener`로 위임된 핸들러
+2. 모든 `.card`에서 `checked-card` 클래스 제거
 3. `localStorage.removeItem('supplementChecks')`
-4. (`scheduleDate`는 그대로 유지 — 날짜는 그대로지만 체크만 초기화)
+4. `updateProgress()`로 진행률 도트와 카운트 즉시 갱신
+5. (`scheduleDate`, `startDate`는 그대로 유지 — 날짜·일수 카운터는 보존, 체크만 초기화)
 
 ### 4-4. localStorage 키
 | 키 | 값 | 의미 |
 |-----|----|----|
-| `supplementChecks` | `JSON: { "0": true, "1": false, ... }` | 체크박스 인덱스별 체크 여부 |
-| `scheduleDate` | `string`, e.g. `"Thu May 07 2026"` | 마지막으로 상태가 저장된 날짜 (자동 초기화 트리거) |
+| `supplementChecks` | `JSON: { "0": true, "1": false, ... }` | 카드 인덱스별 체크 여부 (오늘 분만, 자정에 비워짐) |
+| `scheduleDate` | `string`, e.g. `"Thu May 07 2026"` | 마지막으로 상태가 저장된 날짜 — 자정 자동 초기화 트리거 |
+| `startDate` | `string`, e.g. `"Thu May 07 2026"` | 앱을 처음 사용한 날짜 — `N일째` 카운터 계산용. 한 번 정해지면 변경되지 않음 |
 
-> ⚠ 현재 키는 **인덱스 기반**이라 카드 순서가 바뀌면 상태가 어긋난다 — [LOADMAP.md](LOADMAP.md)에서 ID 기반으로 변경 예정.
+> ⚠ `supplementChecks`는 **인덱스 기반**이라 카드 순서가 바뀌면 상태가 어긋난다 — [LOADMAP.md](LOADMAP.md)에서 ID 기반으로 변경 예정.
+
+> 향후 [LOADMAP.md](LOADMAP.md) P1의 카테고리 탭이 도입되면 `checks:nutrition`, `checks:fitness` 등 카테고리별 스코핑이 추가되고, 캘린더+도장 기능 도입 시 일자별 완수 이력 키(예: `history:2026-05-07`)도 추가될 예정.
 
 ---
 

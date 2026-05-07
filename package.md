@@ -34,12 +34,15 @@
 
 | 리소스 | 출처 | 용도 |
 |--------|------|------|
-| **Noto Serif KR** (300/400/600) | Google Fonts | 한국어 본문 글꼴 |
-| **DM Mono** (300/400) | Google Fonts | 라벨·뱃지·메타 정보용 모노스페이스 |
+| **Fraunces** (가변폰트, ital + opsz 9..144 + wght 300..600 + SOFT 30..100) | Google Fonts | 영문 디스플레이·이탤릭 강조(시간 블록 i.~v. 로마숫자, "0/7" 진행률 강조 등) |
+| **Noto Serif KR** (300/400/600) | Google Fonts | 한국어 본문 — 제목·카드 이름·뱃지·주의사항 |
+| **DM Mono** (300/400/500) | Google Fonts | eyebrow(`DAILY SUPPLEMENT SCHEDULE`)·일자 카운터·도즈 단위 등 모노스페이스 메타 정보 |
 
-로드 위치: [index.html](index.html) `<head>`의 `<link href="https://fonts.googleapis.com/...">`.
+로드 위치: [index.html](index.html) `<head>` 의 `<link rel="preconnect">` + `<link href="https://fonts.googleapis.com/css2?family=Fraunces:...&family=Noto+Serif+KR:...&family=DM+Mono:...">`.
 
 > ⚠ 외부 도메인이라 [sw.js](sw.js)의 캐시 정책(same-origin only)에서 제외됨 — 첫 로드 후 폰트가 캐시된다는 보장은 브라우저 HTTP 캐시에만 의존한다.
+
+**Fraunces SOFT 축**: SOFT 30 = 날카로운 세리프, SOFT 100 = 부드러운 세리프. 본문에서는 30~80 사이 값으로 옵티컬 사이즈에 따라 차등 적용해 작은 글씨에서도 가독성·캐릭터를 모두 살린다.
 
 ---
 

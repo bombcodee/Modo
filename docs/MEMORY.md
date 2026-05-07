@@ -32,6 +32,32 @@
 
 ## 히스토리
 
+### 2026-05-07 — Garden Notes 디자인 업그레이드 + 운영 결정
+
+- **요청**: "프론트엔드 스킬을 사용해서 디자인을 업그레이드 시켜줘 — 따뜻한 톤은 유지하되 더 distinctive하게, 모바일 우선, 진행률 시각화·시간대 구분 강화·더 만족스러운 마이크로 인터랙션, 단 화려하지 말고 고요하게."
+- **결정/실행**:
+  - 3가지 컨셉(Apothecary Almanac / Dawn Meridian / Garden Notes) 중 **Garden Notes** 선택 — 손으로 다듬은 정원 일지 메타포, 흙·이끼·점토 톤
+  - Fraunces 가변폰트 도입 (이탤릭 강조 + SOFT 축으로 옵티컬 사이즈별 차등). Noto Serif KR + DM Mono와 페어링
+  - 페이퍼 결 노이즈 SVG 오버레이는 **사용자 요청으로 제거** — "괜히 더 안보이는 것 같다". 가독성 우선.
+  - **앱 제목**: 본인 결정으로 "**나의 영양제 루틴**" 유지 (Quiet Garden / Modo / 영양제 테이블 제안 중). 이유: 가장 잘 설명하고 친숙함, 향후 분기 가능성도 열어둠
+  - **주의 박스 재구성**: 본인 결정으로 한 박스 안에서 "**✕ 피하기 / ✓ 돕기**" 두 갈래로 나눔 (별도 박스 분리는 공간 낭비). 각각 4개 항목씩(피하기는 기존 3 + 칼슘 추가, 돕기는 신규 4개). 색조: 피하기=클레이, 돕기=이끼
+  - **헤더**: 사용자 요청으로 원본의 중앙 정렬 + 영문 eyebrow(`DAILY SUPPLEMENT SCHEDULE`) 패턴을 새 디자인 톤으로 복원. eyebrow는 모스 그린 DM Mono 와이드 트래킹
+  - **한국어 일괄화**: on empty / fasted / with meal / cap / tab / DAY · 057 / rooted today / reset today / C A V E A T 등 영문 잔재를 모두 한국어로 변환 (공복 / 식후 / 캡슐 / 정 / N일째 / 오늘 N/M 복용 / 오늘 체크 초기화 / 주 의)
+  - **카드 정합 수정**: 태그를 `align-self: baseline` + `min-width: 52px` + `text-align: center`로 가지런히, 이름은 `word-break: keep-all`로 한국어 단어 보호
+  - **인라인 onclick 제거**: `addEventListener`로 위임하여 [PRINCIPLE.md](PRINCIPLE.md) §5 안티패턴 해소
+  - **localStorage**: `startDate` 키 신설(N일째 카운터 누적용). 기존 `supplementChecks` / `scheduleDate`는 호환 유지
+  - **CACHE_VERSION**: v1 → v3 (디자인 갱신을 사용자 기기에 강제 반영)
+- **개발 예정으로 등록 (LOADMAP P1)**:
+  - 캘린더 + "잘했어요" 도장 — 현재 N일째 카운터를 월간 그리드로 교체, 완수일에 도장
+  - 카테고리 탭 — 영양제 / 헬스 보충제(단백질·크레아틴 등)로 분리
+- **영향 범위**:
+  - 수정: [index.html](../index.html) 935줄(이전 575줄), [sw.js](../sw.js) CACHE_VERSION
+  - 문서 동기화: [README.md](../README.md), [package.md](../package.md)(Fraunces 추가), [docs/STRUCTURE.md](STRUCTURE.md)(줄 수·키·함수 갱신), [docs/LOADMAP.md](LOADMAP.md)(P1 신규 항목 + M1 ☑)
+  - 커밋: `03e0196 feat: Garden Notes 디자인 업그레이드 + 한국어 정리 + LOADMAP 신규 기능`
+- **알아둘 것**:
+  - SW 캐시 함정으로 사용자가 변경을 못 보는 일이 있음 — 로컬 개발 중에도 CACHE_VERSION을 올려야 새 HTML이 반영. 브라우저 측에서는 DevTools → Application → Storage → Clear site data가 가장 확실
+  - 카드 IDs(`card-mastic` 등)와 순서를 바꾸지 않은 덕에 기존 사용자(=본인)의 체크 상태가 보존됨. 향후 ID 기반 키로 마이그레이션할 때도 같은 IDs를 유지할 것
+
 ### 2026-05-07 — 첫 배포 (GitHub + Vercel)
 
 - **요청**: "vercel에 올린다던지 그전에 깃헙에 올린다던지 — 다음 스탭 플랜을 짜고 순서대로 쭉 진행하자"
