@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>영양제 복용 스케줄</title>
+
+<!-- ============== PWA 메타태그 ============== -->
+<!-- 표준 PWA manifest (Chrome, Edge, Android 등) -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- 브라우저 상단바 색상 (Android Chrome에서 적용됨) -->
+<meta name="theme-color" content="#C4714A">
+
+<!-- iOS Safari 전용: 홈 화면에서 열 때 Safari UI 숨기고 전체화면처럼 동작 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="영양제">
+
+<!-- iOS 홈 화면 아이콘 -->
+<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+
+<!-- 구형 브라우저용 favicon -->
+<link rel="icon" type="image/png" href="/assets/icons/icon-192.png">
+<!-- ========================================= -->
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FDF9F4;
+    --sage: #7A8C6E;
+    --sage-light: #9BAD8A;
+    --sage-dark: #5A6B50;
+    --terracotta: #C4714A;
+    --terracotta-light: #E8956D;
+    --gold: #C9A96E;
+    --dark: #2C2A26;
+    --mid: #6B6560;
+    --light: #B8B0A6;
+    --border: #E8E0D4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    font-family: 'Noto Serif KR', serif;
+    color: var(--dark);
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--sage);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    color: var(--dark);
+    margin-bottom: 8px;
+  }
+
+  .header h1 span {
+    color: var(--terracotta);
+    font-weight: 600;
+  }
+
+  .header-sub {
+    font-size: 13px;
+    color: var(--light);
+    font-weight: 300;
+  }
+
+  /* Time blocks */
+  .time-block {
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .time-block:nth-child(1) { animation-delay: 0.1s; }
+  .time-block:nth-child(2) { animation-delay: 0.2s; }
+  .time-block:nth-child(3) { animation-delay: 0.3s; }
+  .time-block:nth-child(4) { animation-delay: 0.4s; }
+  .time-block:nth-child(5) { animation-delay: 0.5s; }
+
+  .time-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .time-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .time-dot.morning { background: var(--gold); }
+  .time-dot.breakfast { background: var(--sage-light); }
+  .time-dot.lunch { background: var(--sage); }
+  .time-dot.dinner { background: var(--terracotta); }
+  .time-dot.night { background: var(--dark); }
+
+  .time-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--mid);
+    text-transform: uppercase;
+  }
+
+  .time-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .time-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--light);
+    letter-spacing: 1px;
+  }
+
+  /* Cards */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 24px;
+  }
+
+  .card {
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+  }
+
+  .card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  .card-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .card-body {
+    flex: 1;
+  }
+
+  .card-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 3px;
+  }
+
+  .card-dose {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--terracotta);
+    margin-bottom: 4px;
+  }
+
+  .card-tip {
+    font-size: 11px;
+    color: var(--light);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .tag-green { background: #EDF2E8; color: var(--sage-dark); }
+  .tag-orange { background: #FBF0EA; color: var(--terracotta); }
+  .tag-gold { background: #FBF5EA; color: #9A7A40; }
+  .tag-dark { background: #ECEAE6; color: var(--mid); }
+
+  /* Warning box */
+  .warning-box {
+    margin-top: 40px;
+    background: #FDF6F3;
+    border: 1px solid #F0D9D0;
+    border-radius: 14px;
+    padding: 20px 22px;
+    animation: fadeUp 0.6s ease 0.6s both;
+  }
+
+  .warning-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--terracotta);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .warning-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .warning-list li {
+    font-size: 12px;
+    color: var(--mid);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .warning-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--terracotta-light);
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s ease 0.7s both;
+  }
+
+  .footer p {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    line-height: 1.8;
+  }
+
+  /* Checkbox interaction */
+  .check-btn {
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: white;
+    align-self: center;
+  }
+
+  .check-btn:hover {
+    border-color: var(--sage-light);
+  }
+
+  .check-btn.checked {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+
+  .check-btn.checked::after {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-family: sans-serif;
+  }
+
+  .card.checked-card {
+    opacity: 0.5;
+  }
+
+  .card.checked-card .card-name {
+    text-decoration: line-through;
+    color: var(--light);
+  }
+
+  /* Reset button */
+  .reset-btn {
+    margin-top: 16px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--light);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--sage-light);
+    color: var(--sage);
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 24px 16px; }
+    .header h1 { font-size: 22px; }
+    .card { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-label">Daily Supplement Schedule</div>
+    <h1>나의 <span>영양제</span> 루틴</h1>
+    <p class="header-sub">매일 체크하며 복용하세요</p>
+  </div>
+
+  <!-- 기상 직후 (공복) -->
+  <div class="time-block">
+    <div class="time-header">
+      <div class="time-dot morning"></div>
+      <div class="time-label">기상 직후</div>
+      <div class="time-line"></div>
+      <div class="time-badge">공복</div>
+    </div>
+    <div class="cards">
+      <div class="card" id="card-mastic">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-mastic')"></div>
+        <div class="card-icon">🌿</div>
+        <div class="card-body">
+          <div class="card-name">매스틱검</div>
+          <div class="card-dose">2캡슐 · 1,000mg</div>
+          <div class="card-tip">식사 30분~1시간 전, 물 한 컵과 함께<br>위벽이 비어있을 때 위점막에 직접 작용</div>
+        </div>
+        <div class="card-tag tag-gold">위장</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 아침 식사 30분 전 -->
+  <div class="time-block">
+    <div class="time-header">
+      <div class="time-dot breakfast"></div>
+      <div class="time-label">아침 식사 30분 전</div>
+      <div class="time-line"></div>
+      <div class="time-badge">공복</div>
+    </div>
+    <div class="cards">
+      <div class="card" id="card-probiotics">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-probiotics')"></div>
+        <div class="card-icon">🦠</div>
+        <div class="card-body">
+          <div class="card-name">유산균</div>
+          <div class="card-dose">1캡슐 · 25B CFU</div>
+          <div class="card-tip">공복 복용 시 장 도달률이 가장 높음<br>처음 2~3주는 가스가 늘 수 있어요</div>
+        </div>
+        <div class="card-tag tag-green">장 건강</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 아침 식사 중/후 -->
+  <div class="time-block">
+    <div class="time-header">
+      <div class="time-dot lunch"></div>
+      <div class="time-label">아침 식사 중 / 후</div>
+      <div class="time-line"></div>
+      <div class="time-badge">식사와 함께</div>
+    </div>
+    <div class="cards">
+      <div class="card" id="card-multi">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-multi')"></div>
+        <div class="card-icon">💊</div>
+        <div class="card-body">
+          <div class="card-name">종합비타민</div>
+          <div class="card-dose">1정</div>
+          <div class="card-tip">지용성 비타민 흡수 & 위 보호를 위해 식사 중 복용</div>
+        </div>
+        <div class="card-tag tag-green">면역</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 저녁 식사 중/후 -->
+  <div class="time-block">
+    <div class="time-header">
+      <div class="time-dot dinner"></div>
+      <div class="time-label">저녁 식사 중 / 후</div>
+      <div class="time-line"></div>
+      <div class="time-badge">식사와 함께</div>
+    </div>
+    <div class="cards">
+      <div class="card" id="card-multi2">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-multi2')"></div>
+        <div class="card-icon">💊</div>
+        <div class="card-body">
+          <div class="card-name">종합비타민</div>
+          <div class="card-dose">1정</div>
+          <div class="card-tip">하루 2회 분할 복용 권장</div>
+        </div>
+        <div class="card-tag tag-green">면역</div>
+      </div>
+      <div class="card" id="card-omega">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-omega')"></div>
+        <div class="card-icon">🐟</div>
+        <div class="card-body">
+          <div class="card-name">오메가3</div>
+          <div class="card-dose">1캡슐</div>
+          <div class="card-tip">저녁 지방 식사와 함께 → 흡수율 & 중성지방 억제 효과 최적</div>
+        </div>
+        <div class="card-tag tag-orange">혈행</div>
+      </div>
+      <div class="card" id="card-iron">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-iron')"></div>
+        <div class="card-icon">🩸</div>
+        <div class="card-body">
+          <div class="card-name">철분제 (Gentle Iron)</div>
+          <div class="card-dose">1캡슐 · 25mg</div>
+          <div class="card-tip">비타민C 음료와 함께 → 흡수율 ↑<br>커피·녹차·마그네슘은 2시간 간격 유지</div>
+        </div>
+        <div class="card-tag tag-orange">빈혈</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 취침 전 -->
+  <div class="time-block">
+    <div class="time-header">
+      <div class="time-dot night"></div>
+      <div class="time-label">취침 전</div>
+      <div class="time-line"></div>
+      <div class="time-badge">저녁 식후 2시간 후</div>
+    </div>
+    <div class="cards">
+      <div class="card" id="card-mag">
+        <div class="check-btn" onclick="toggleCheck(this, 'card-mag')"></div>
+        <div class="card-icon">🌙</div>
+        <div class="card-body">
+          <div class="card-name">마그네슘 (글리시네이트)</div>
+          <div class="card-dose">2정 · 200mg</div>
+          <div class="card-tip">수면 질 개선 & 근육 이완 효과<br>철분제와 최소 2시간 간격 필수</div>
+        </div>
+        <div class="card-tag tag-dark">수면·근육</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주의사항 -->
+  <div class="warning-box">
+    <div class="warning-title">⚠ 주의사항</div>
+    <ul class="warning-list">
+      <li>철분 + 마그네슘은 같은 시간에 복용 금지 (흡수 방해) — 최소 2시간 간격</li>
+      <li>철분 복용 전후 1시간은 커피·녹차·홍차 피하기 (타닌이 흡수 방해)</li>
+      <li>유산균 + 항생제 복용 중이라면 최소 2시간 간격</li>
+      <li>철분 복용 시 비타민C 음료(오렌지주스 등)와 함께 → 흡수율 30% 향상</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    <p>모든 영양제는 꾸준히 복용할 때 효과가 나타납니다<br>이상 반응 시 즉시 중단하고 의사와 상담하세요</p>
+    <button class="reset-btn" onclick="resetAll()">오늘 체크 초기화</button>
+  </div>
+
+</div>
+
+<script>
+  function toggleCheck(btn, cardId) {
+    btn.classList.toggle('checked');
+    document.getElementById(cardId).classList.toggle('checked-card');
+    saveState();
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.check-btn').forEach(btn => btn.classList.remove('checked'));
+    document.querySelectorAll('.card').forEach(card => card.classList.remove('checked-card'));
+    localStorage.removeItem('supplementChecks');
+  }
+
+  function saveState() {
+    const state = {};
+    document.querySelectorAll('.check-btn').forEach((btn, i) => {
+      state[i] = btn.classList.contains('checked');
+    });
+    try { localStorage.setItem('supplementChecks', JSON.stringify(state)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const state = JSON.parse(localStorage.getItem('supplementChecks') || '{}');
+      document.querySelectorAll('.check-btn').forEach((btn, i) => {
+        if (state[i]) {
+          btn.classList.add('checked');
+          btn.closest('.card').classList.add('checked-card');
+        }
+      });
+    } catch(e) {}
+  }
+
+  // 날짜가 바뀌면 자동 초기화
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem('scheduleDate');
+  if (savedDate !== today) {
+    localStorage.setItem('scheduleDate', today);
+    localStorage.removeItem('supplementChecks');
+  } else {
+    loadState();
+  }
+
+  // ============== Service Worker 등록 ==============
+  // PWA 오프라인 지원을 위해 Service Worker를 등록합니다.
+  // - 'serviceWorker' 지원 여부를 먼저 확인 (구형 브라우저 호환성)
+  // - 페이지 load 이후에 등록해서 초기 로딩 성능에 영향 없도록 함
+  // - localhost가 아닌 https에서만 동작 (Vercel은 자동 https라 OK)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('[SW] 등록 성공:', reg.scope))
+        .catch(err => console.log('[SW] 등록 실패:', err));
+    });
+  }
+  // ===============================================
+</script>
+</body>
+</html>
