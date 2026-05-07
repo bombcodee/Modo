@@ -12,7 +12,8 @@
  */
 
 // 캐시 버전 - HTML/CSS/JS 수정 후 배포할 때마다 이 숫자를 올려야 사용자에게 새 버전이 적용됩니다
-const CACHE_VERSION = 'v1';
+// v3: 디자인 다듬기 — 한국어 일괄 / 헤더 중앙 정렬 + eyebrow / 주의 박스 2갈래 / 카드 정합 (2026-05-07)
+const CACHE_VERSION = 'v3';
 const CACHE_NAME = `supplement-cache-${CACHE_VERSION}`;
 
 // 미리 캐시할 파일 목록 (앱 셸)

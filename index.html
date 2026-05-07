@@ -3,533 +3,889 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>영양제 복용 스케줄</title>
+<title>나의 영양제 루틴</title>
 
 <!-- ============== PWA 메타태그 ============== -->
-<!-- 표준 PWA manifest (Chrome, Edge, Android 등) -->
 <link rel="manifest" href="/manifest.json">
-
-<!-- 브라우저 상단바 색상 (Android Chrome에서 적용됨) -->
-<meta name="theme-color" content="#C4714A">
-
-<!-- iOS Safari 전용: 홈 화면에서 열 때 Safari UI 숨기고 전체화면처럼 동작 -->
+<meta name="theme-color" content="#F5EFE3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="영양제">
-
-<!-- iOS 홈 화면 아이콘 -->
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-
-<!-- 구형 브라우저용 favicon -->
 <link rel="icon" type="image/png" href="/assets/icons/icon-192.png">
 <!-- ========================================= -->
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,30..100;1,9..144,300..600,30..100&family=Noto+Serif+KR:wght@300;400;600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
+  /* ============================================================
+     DESIGN TOKENS — Garden Notes
+     paper의 깊이감(4단), 흙·이끼·점토의 자연 색조,
+     따뜻한 톤의 다층 그림자로 종이 위에 놓인 카드 질감을 만든다.
+     ============================================================ */
   :root {
-    --cream: #FAF7F2;
-    --warm-white: #FDF9F4;
-    --sage: #7A8C6E;
-    --sage-light: #9BAD8A;
-    --sage-dark: #5A6B50;
-    --terracotta: #C4714A;
-    --terracotta-light: #E8956D;
-    --gold: #C9A96E;
-    --dark: #2C2A26;
-    --mid: #6B6560;
-    --light: #B8B0A6;
-    --border: #E8E0D4;
+    /* paper & ink */
+    --paper:        #F5EFE3;
+    --paper-warm:   #FAF5EA;
+    --paper-deep:   #ECE3D0;
+    --paper-edge:   #DDD3BD;
+
+    --ink:          #2A2520;
+    --ink-soft:     #5A4F44;
+    --ink-mute:     #968A7A;
+    --ink-faint:    #C4BBA8;
+
+    /* botanical */
+    --moss:         #5C6B4D;
+    --moss-light:   #8FA178;
+    --moss-dust:    #DDE2CD;
+
+    /* clay (primary accent) */
+    --clay:         #B5663F;
+    --clay-deep:    #985328;
+    --clay-light:   #DCA688;
+    --clay-dust:    #F4E2D5;
+
+    /* ochre & night (secondary accents) */
+    --ochre:        #B68C4A;
+    --ochre-deep:   #7B5E2A;
+    --ochre-dust:   #F5EAD3;
+
+    --night:        #2D2C30;
+    --night-dust:   #DCDADA;
+
+    /* warm-tinted shadows — 종이 위에 카드가 살짝 떠 있는 느낌 */
+    --shadow-card:
+      0 1px 1px rgba(74, 60, 44, 0.03),
+      0 4px 8px rgba(74, 60, 44, 0.04),
+      0 12px 32px rgba(74, 60, 44, 0.06);
+    --shadow-card-hover:
+      0 1px 2px rgba(74, 60, 44, 0.04),
+      0 6px 14px rgba(74, 60, 44, 0.07),
+      0 22px 50px rgba(74, 60, 44, 0.10);
+    --shadow-card-checked:
+      inset 0 1px 2px rgba(60, 50, 40, 0.06),
+      0 1px 1px rgba(74, 60, 44, 0.02);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 
   body {
-    background: var(--cream);
-    font-family: 'Noto Serif KR', serif;
-    color: var(--dark);
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 0%, var(--paper-warm) 0%, var(--paper) 55%);
+    color: var(--ink);
+    font-family: 'Noto Serif KR', 'Fraunces', serif;
+    font-weight: 400;
+    line-height: 1.55;
     min-height: 100vh;
-    padding: 40px 20px;
+    padding: 36px 22px 80px;
+    position: relative;
+    overflow-x: hidden;
   }
 
   .container {
-    max-width: 680px;
+    max-width: 540px;
     margin: 0 auto;
+    position: relative;
+    z-index: 1;
   }
 
-  /* Header */
+  /* ===== Header — 중앙 정렬 (eyebrow / title / subtitle) ===== */
   .header {
-    text-align: center;
-    margin-bottom: 48px;
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--border);
-    animation: fadeDown 0.8s ease both;
-  }
-
-  .header-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: var(--sage);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .header h1 {
-    font-size: 28px;
-    font-weight: 300;
-    letter-spacing: -0.5px;
-    color: var(--dark);
+    padding: 8px 4px 0;
     margin-bottom: 8px;
+    text-align: center;
+    animation: fadeIn 0.9s ease both;
   }
 
-  .header h1 span {
-    color: var(--terracotta);
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+    font-size: 10px;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--moss-light);
+    margin-bottom: 18px;
+  }
+
+  .header-title {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .header-title em {
+    font-style: normal;
     font-weight: 600;
+    color: var(--clay);
   }
 
-  .header-sub {
-    font-size: 13px;
-    color: var(--light);
+  .header-korean {
+    font-family: 'Noto Serif KR', serif;
     font-weight: 300;
+    font-size: 14px;
+    color: var(--ink-mute);
+    margin-top: 12px;
+    letter-spacing: 0.01em;
   }
 
-  /* Time blocks */
-  .time-block {
-    margin-bottom: 24px;
-    animation: fadeUp 0.6s ease both;
-  }
-
-  .time-block:nth-child(1) { animation-delay: 0.1s; }
-  .time-block:nth-child(2) { animation-delay: 0.2s; }
-  .time-block:nth-child(3) { animation-delay: 0.3s; }
-  .time-block:nth-child(4) { animation-delay: 0.4s; }
-  .time-block:nth-child(5) { animation-delay: 0.5s; }
-
-  .time-header {
+  /* meta row + 진행률 = 헤더의 "원장(ledger)" 줄 — 중앙 정렬 헤더 아래 양 끝에 배치 */
+  .meta-row {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 12px;
+    justify-content: space-between;
+    align-items: baseline;
+    margin: 32px 0 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--paper-edge);
   }
 
-  .time-dot {
+  .day-counter {
+    font-family: 'DM Mono', 'Noto Serif KR', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+  }
+
+  .day-counter strong {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--ink);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    margin: 0 2px;
+  }
+
+  .progress-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-variation-settings: "opsz" 18;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .progress-text strong {
+    font-weight: 500;
+    font-style: italic;
+    font-variation-settings: "opsz" 18, "SOFT" 80;
+    color: var(--clay);
+    font-size: 16px;
+    margin-right: 1px;
+  }
+
+  /* 씨앗 도트 — 채워지면 spring으로 튀고 후광 등장 */
+  .progress-row {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    justify-content: center;
+    margin: 16px 0 4px;
+    padding: 0 2px;
+  }
+
+  .progress-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    border: 1.2px solid var(--ink-faint);
+    background: transparent;
+    transition: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
     flex-shrink: 0;
   }
 
-  .time-dot.morning { background: var(--gold); }
-  .time-dot.breakfast { background: var(--sage-light); }
-  .time-dot.lunch { background: var(--sage); }
-  .time-dot.dinner { background: var(--terracotta); }
-  .time-dot.night { background: var(--dark); }
-
-  .time-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--mid);
-    text-transform: uppercase;
+  .progress-dot.filled {
+    background: var(--clay);
+    border-color: var(--clay);
+    transform: scale(1.12);
+    box-shadow: 0 0 0 3px var(--clay-dust);
   }
 
-  .time-line {
+  /* ===== Time block ===================================== */
+  .time-block {
+    margin-top: 36px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .time-block:nth-of-type(1) { animation-delay: 0.18s; }
+  .time-block:nth-of-type(2) { animation-delay: 0.28s; }
+  .time-block:nth-of-type(3) { animation-delay: 0.38s; }
+  .time-block:nth-of-type(4) { animation-delay: 0.48s; }
+  .time-block:nth-of-type(5) { animation-delay: 0.58s; }
+
+  .time-marker {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding-left: 4px;
+  }
+
+  .time-roman {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-variation-settings: "opsz" 36, "SOFT" 80;
+    font-size: 22px;
+    color: var(--clay);
+    flex-shrink: 0;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .time-info {
     flex: 1;
-    height: 1px;
-    background: var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--paper-edge);
+    padding-bottom: 11px;
+  }
+
+  .time-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 400;
+    letter-spacing: 0.005em;
   }
 
   .time-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--light);
-    letter-spacing: 1px;
+    font-family: 'Noto Serif KR', 'DM Mono', serif;
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: var(--ink-mute);
+    flex-shrink: 0;
   }
 
-  /* Cards */
+  /* ===== Cards ========================================== */
   .cards {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding-left: 24px;
+    gap: 10px;
+    padding: 14px 0 0 4px;
   }
 
   .card {
-    background: var(--warm-white);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    cursor: default;
+    position: relative;
+    background: var(--paper-warm);
+    border: 1px solid var(--paper-edge);
+    border-radius: 9px;
+    padding: 16px 18px 16px 16px;
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    column-gap: 14px;
+    row-gap: 4px;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+      background 0.28s ease,
+      border-color 0.28s ease;
+  }
+
+  /* 카드 내부 인셋 — deckled inner edge 느낌 */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 0.5px solid rgba(60, 50, 40, 0.04);
+    border-radius: 6px;
+    pointer-events: none;
   }
 
   .card:hover {
-    transform: translateX(4px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card-hover);
   }
+  .card:active { transform: translateY(0); }
 
   .card-icon {
-    font-size: 20px;
-    flex-shrink: 0;
-    margin-top: 1px;
+    /* 이모지마다 em-box 안 글리프 위치가 달라 정렬이 흔들리므로,
+       고정 크기 flex 박스로 감싸서 모든 아이콘을 동일한 셀 안에 중앙 정렬한다 */
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 30px;
+    height: 26px;
+    font-size: 22px;
+    line-height: 1;
+    align-self: start;
+    margin-top: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease, filter 0.3s ease;
   }
 
-  .card-body {
-    flex: 1;
-  }
+  /* 🐟는 Apple Color Emoji에서 em-box 위쪽에 글리프가 그려져
+     다른 아이콘 대비 살짝 위로 떠 보이므로 미세 보정 */
+  #card-omega .card-icon { transform: translateY(1px); }
 
   .card-name {
-    font-size: 14px;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: baseline;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--dark);
-    margin-bottom: 3px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+    position: relative;
+    word-break: keep-all;
+    transition: color 0.35s ease;
+  }
+
+  /* 체크 시 좌→우로 그어지는 손그림 느낌 가로선 */
+  .card-name::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 56%;
+    height: 1.2px;
+    background: var(--ink-mute);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.55s cubic-bezier(0.7, 0, 0.3, 1);
+    border-radius: 2px;
   }
 
   .card-dose {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--terracotta);
-    margin-bottom: 4px;
-  }
-
-  .card-tip {
-    font-size: 11px;
-    color: var(--light);
-    line-height: 1.5;
-    font-weight: 300;
+    grid-column: 2;
+    grid-row: 2;
+    font-family: 'Noto Serif KR', 'DM Mono', serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--clay);
+    letter-spacing: 0.02em;
+    transition: color 0.35s ease;
   }
 
   .card-tag {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 3px 8px;
-    border-radius: 20px;
-    flex-shrink: 0;
-    align-self: center;
-  }
-
-  .tag-green { background: #EDF2E8; color: var(--sage-dark); }
-  .tag-orange { background: #FBF0EA; color: var(--terracotta); }
-  .tag-gold { background: #FBF5EA; color: #9A7A40; }
-  .tag-dark { background: #ECEAE6; color: var(--mid); }
-
-  /* Warning box */
-  .warning-box {
-    margin-top: 40px;
-    background: #FDF6F3;
-    border: 1px solid #F0D9D0;
-    border-radius: 14px;
-    padding: 20px 22px;
-    animation: fadeUp 0.6s ease 0.6s both;
-  }
-
-  .warning-title {
-    font-family: 'DM Mono', monospace;
+    grid-column: 3;
+    grid-row: 1;
+    align-self: baseline;
+    justify-self: end;
+    font-family: 'Noto Serif KR', 'DM Mono', serif;
     font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--terracotta);
-    text-transform: uppercase;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    min-width: 52px;
+    text-align: center;
+    border-radius: 100px;
+    border: 0.5px solid currentColor;
+    flex-shrink: 0;
+    transform: translateY(2px);
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+  }
+
+  .tag-green   { color: var(--moss);       background: var(--moss-dust);  border-color: rgba(92, 107, 77, 0.22); }
+  .tag-orange  { color: var(--clay-deep);  background: var(--clay-dust);  border-color: rgba(149, 83, 40, 0.22); }
+  .tag-gold    { color: var(--ochre-deep); background: var(--ochre-dust); border-color: rgba(123, 94, 42, 0.22); }
+  .tag-dark    { color: var(--night);      background: var(--night-dust); border-color: rgba(45, 44, 48, 0.22); }
+
+  .card-tip {
+    grid-column: 2 / span 2;
+    grid-row: 3;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12px;
+    color: var(--ink-mute);
+    line-height: 1.6;
+    font-weight: 300;
+    margin-top: 8px;
+    padding-top: 9px;
+    border-top: 1px dashed var(--paper-edge);
+    transition: color 0.35s ease;
+  }
+
+  /* === checked state — 종이가 살짝 내려앉은 느낌 === */
+  .card.checked-card {
+    background: var(--paper-deep);
+    border-color: rgba(60, 50, 40, 0.10);
+    box-shadow: var(--shadow-card-checked);
+    transform: translateY(0);
+  }
+  .card.checked-card:hover { transform: translateY(0); }
+  .card.checked-card .card-name      { color: var(--ink-mute); }
+  .card.checked-card .card-name::after { transform: scaleX(1); }
+  .card.checked-card .card-dose      { color: var(--ink-faint); }
+  .card.checked-card .card-tag       { opacity: 0.55; }
+  .card.checked-card .card-icon      { opacity: 0.5; filter: grayscale(0.4); }
+  .card.checked-card .card-tip       { color: var(--ink-faint); }
+
+  /* dust 파티클 — JS에서 동적 생성, body에 잠시 떴다가 사라짐 */
+  @keyframes dust {
+    0%   { opacity: 0;   transform: translate(0, 0) scale(0.4); }
+    18%  { opacity: 0.7; transform: translate(calc(var(--dx, 0px) * 0.3), -3px) scale(1); }
+    100% { opacity: 0;   transform: translate(var(--dx, 0px), -14px) scale(0.55); }
+  }
+
+  /* ===== Caveat (주의사항) ============================== */
+  .warning-box {
+    margin-top: 52px;
+    background: var(--paper-warm);
+    border: 1px dashed var(--clay-light);
+    border-radius: 11px;
+    padding: 26px 22px 22px;
+    position: relative;
+    animation: fadeUp 0.7s ease 0.7s both;
+  }
+
+  .warning-box::before {
+    content: '주 의';
+    position: absolute;
+    top: -7px;
+    left: 22px;
+    background: var(--paper);
+    padding: 0 10px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.4em;
+    color: var(--clay);
+  }
+
+  /* 주의 박스의 두 그룹: 피하기 / 돕기 */
+  .warning-group + .warning-group {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 0.5px dashed var(--paper-edge);
+  }
+
+  .warning-group-title {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.02em;
     margin-bottom: 12px;
   }
+
+  .warning-group.is-avoid .warning-group-title { color: var(--clay-deep); }
+  .warning-group.is-help  .warning-group-title { color: var(--moss); }
+
+  .warning-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .is-avoid .warning-mark { background: var(--clay-dust); color: var(--clay-deep); }
+  .is-help  .warning-mark { background: var(--moss-dust); color: var(--moss); }
 
   .warning-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 9px;
   }
 
   .warning-list li {
+    font-family: 'Noto Serif KR', serif;
     font-size: 12px;
-    color: var(--mid);
-    padding-left: 16px;
-    position: relative;
-    line-height: 1.6;
+    color: var(--ink-soft);
+    line-height: 1.7;
     font-weight: 300;
+    padding-left: 18px;
+    position: relative;
   }
 
   .warning-list li::before {
-    content: '—';
+    content: '✿';
     position: absolute;
     left: 0;
-    color: var(--terracotta-light);
-  }
-
-  /* Footer */
-  .footer {
-    text-align: center;
-    margin-top: 36px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    animation: fadeUp 0.6s ease 0.7s both;
-  }
-
-  .footer p {
-    font-size: 11px;
-    color: var(--light);
-    font-weight: 300;
-    letter-spacing: 0.5px;
-    line-height: 1.8;
-  }
-
-  /* Checkbox interaction */
-  .check-btn {
-    width: 22px;
-    height: 22px;
-    border: 1.5px solid var(--border);
-    border-radius: 6px;
-    flex-shrink: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    background: white;
-    align-self: center;
-  }
-
-  .check-btn:hover {
-    border-color: var(--sage-light);
-  }
-
-  .check-btn.checked {
-    background: var(--sage);
-    border-color: var(--sage);
-  }
-
-  .check-btn.checked::after {
-    content: '✓';
-    color: white;
-    font-size: 12px;
-    font-family: sans-serif;
-  }
-
-  .card.checked-card {
-    opacity: 0.5;
-  }
-
-  .card.checked-card .card-name {
-    text-decoration: line-through;
-    color: var(--light);
-  }
-
-  /* Reset button */
-  .reset-btn {
-    margin-top: 16px;
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 8px 20px;
-    font-family: 'DM Mono', monospace;
+    top: 0;
     font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--light);
+  }
+
+  /* 그룹별 불릿 색조 차이 — 클레이(피하기) vs 이끼(돕기) */
+  .is-avoid .warning-list li::before { color: var(--clay-light); }
+  .is-help  .warning-list li::before { color: var(--moss-light); }
+
+  /* ===== Footer ========================================= */
+  .footer {
+    margin-top: 44px;
+    padding: 26px 0 8px;
+    text-align: center;
+    border-top: 1px solid var(--paper-edge);
+    animation: fadeUp 0.7s ease 0.85s both;
+  }
+
+  .footer-text-kor {
+    font-family: 'Noto Serif KR', serif;
+    font-style: normal;
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+
+  .reset-btn {
+    margin-top: 6px;
+    background: transparent;
+    border: 0.8px solid var(--paper-edge);
+    border-radius: 100px;
+    padding: 10px 24px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: var(--ink-mute);
     cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  .reset-btn:hover {
-    border-color: var(--sage-light);
-    color: var(--sage);
+  .reset-btn:hover, .reset-btn:active {
+    border-color: var(--clay-light);
+    color: var(--clay);
+    background: var(--clay-dust);
   }
 
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to { opacity: 1; transform: translateY(0); }
+  /* ===== Animations ==================================== */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ===== Mobile refinements ============================ */
   @media (max-width: 480px) {
-    body { padding: 24px 16px; }
-    .header h1 { font-size: 22px; }
-    .card { padding: 12px 14px; }
+    body { padding: 28px 16px 60px; }
+    .header-eyebrow { font-size: 9px; letter-spacing: 0.36em; margin-bottom: 14px; }
+    .header-title { font-size: 30px; line-height: 1.18; }
+    .header-korean { font-size: 13px; margin-top: 10px; }
+    .meta-row { margin-top: 24px; padding-bottom: 12px; }
+    .progress-row { gap: 7px; margin-top: 14px; }
+    .progress-dot { width: 9px; height: 9px; }
+    .time-block { margin-top: 30px; }
+    .time-roman { font-size: 19px; }
+    .time-marker { gap: 12px; }
+    .card { padding: 14px 16px 14px 14px; column-gap: 12px; }
+    .cards .card:nth-child(odd)  { margin-right: 4px; }
+    .cards .card:nth-child(even) { margin-left: 4px; }
+    .warning-box { padding: 24px 18px 20px; margin-top: 44px; }
+    .footer { margin-top: 36px; }
+  }
+
+  @media (min-width: 600px) {
+    .container { max-width: 580px; }
+  }
+
+  /* prefer-reduced-motion 존중 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <div class="header">
-    <div class="header-label">Daily Supplement Schedule</div>
-    <h1>나의 <span>영양제</span> 루틴</h1>
-    <p class="header-sub">매일 체크하며 복용하세요</p>
-  </div>
+  <!-- ===== Header — brand + day counter + progress dots ===== -->
+  <header class="header">
+    <div class="header-eyebrow">Daily Supplement Schedule</div>
+    <h1 class="header-title">나의 <em>영양제</em> 루틴</h1>
+    <p class="header-korean">매일 챙기는 작은 의식</p>
 
-  <!-- 기상 직후 (공복) -->
-  <div class="time-block">
-    <div class="time-header">
-      <div class="time-dot morning"></div>
-      <div class="time-label">기상 직후</div>
-      <div class="time-line"></div>
-      <div class="time-badge">공복</div>
+    <div class="meta-row">
+      <div class="day-counter"><strong id="day-num">001</strong>일째</div>
+      <div class="progress-text">오늘 <strong id="progress-now">0</strong>/<span id="progress-total">7</span> 복용</div>
+    </div>
+
+    <div class="progress-row" id="progress-row" aria-hidden="true">
+      <!-- 씨앗 도트는 JS에서 카드 수만큼 생성 -->
+    </div>
+  </header>
+
+  <!-- ===== i. 기상 직후 (공복) ===== -->
+  <section class="time-block">
+    <div class="time-marker">
+      <div class="time-roman">i.</div>
+      <div class="time-info">
+        <div class="time-label">기상 직후</div>
+        <div class="time-badge">공복</div>
+      </div>
     </div>
     <div class="cards">
       <div class="card" id="card-mastic">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-mastic')"></div>
         <div class="card-icon">🌿</div>
-        <div class="card-body">
-          <div class="card-name">매스틱검</div>
-          <div class="card-dose">2캡슐 · 1,000mg</div>
-          <div class="card-tip">식사 30분~1시간 전, 물 한 컵과 함께<br>위벽이 비어있을 때 위점막에 직접 작용</div>
-        </div>
+        <div class="card-name">매스틱검</div>
+        <div class="card-dose">2캡슐 · 1,000mg</div>
         <div class="card-tag tag-gold">위장</div>
+        <div class="card-tip">식사 30분~1시간 전, 물 한 컵과 함께 — 위벽이 비어있을 때 위점막에 직접 작용</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 아침 식사 30분 전 -->
-  <div class="time-block">
-    <div class="time-header">
-      <div class="time-dot breakfast"></div>
-      <div class="time-label">아침 식사 30분 전</div>
-      <div class="time-line"></div>
-      <div class="time-badge">공복</div>
+  <!-- ===== ii. 아침 식사 30분 전 (공복) ===== -->
+  <section class="time-block">
+    <div class="time-marker">
+      <div class="time-roman">ii.</div>
+      <div class="time-info">
+        <div class="time-label">아침 식사 30분 전</div>
+        <div class="time-badge">공복</div>
+      </div>
     </div>
     <div class="cards">
       <div class="card" id="card-probiotics">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-probiotics')"></div>
         <div class="card-icon">🦠</div>
-        <div class="card-body">
-          <div class="card-name">유산균</div>
-          <div class="card-dose">1캡슐 · 25B CFU</div>
-          <div class="card-tip">공복 복용 시 장 도달률이 가장 높음<br>처음 2~3주는 가스가 늘 수 있어요</div>
-        </div>
+        <div class="card-name">유산균</div>
+        <div class="card-dose">1캡슐 · 25B CFU</div>
         <div class="card-tag tag-green">장 건강</div>
+        <div class="card-tip">공복 복용 시 장 도달률이 가장 높음 — 처음 2~3주는 가스가 늘 수 있어요</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 아침 식사 중/후 -->
-  <div class="time-block">
-    <div class="time-header">
-      <div class="time-dot lunch"></div>
-      <div class="time-label">아침 식사 중 / 후</div>
-      <div class="time-line"></div>
-      <div class="time-badge">식사와 함께</div>
+  <!-- ===== iii. 아침 식사 중/후 (식사와 함께) ===== -->
+  <section class="time-block">
+    <div class="time-marker">
+      <div class="time-roman">iii.</div>
+      <div class="time-info">
+        <div class="time-label">아침 식사 중 / 후</div>
+        <div class="time-badge">식후</div>
+      </div>
     </div>
     <div class="cards">
       <div class="card" id="card-multi">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-multi')"></div>
         <div class="card-icon">💊</div>
-        <div class="card-body">
-          <div class="card-name">종합비타민</div>
-          <div class="card-dose">1정</div>
-          <div class="card-tip">지용성 비타민 흡수 & 위 보호를 위해 식사 중 복용</div>
-        </div>
+        <div class="card-name">종합비타민</div>
+        <div class="card-dose">1정</div>
         <div class="card-tag tag-green">면역</div>
+        <div class="card-tip">지용성 비타민 흡수와 위 보호를 위해 식사 중에 복용</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 저녁 식사 중/후 -->
-  <div class="time-block">
-    <div class="time-header">
-      <div class="time-dot dinner"></div>
-      <div class="time-label">저녁 식사 중 / 후</div>
-      <div class="time-line"></div>
-      <div class="time-badge">식사와 함께</div>
+  <!-- ===== iv. 저녁 식사 중/후 (식사와 함께) ===== -->
+  <section class="time-block">
+    <div class="time-marker">
+      <div class="time-roman">iv.</div>
+      <div class="time-info">
+        <div class="time-label">저녁 식사 중 / 후</div>
+        <div class="time-badge">식후</div>
+      </div>
     </div>
     <div class="cards">
       <div class="card" id="card-multi2">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-multi2')"></div>
         <div class="card-icon">💊</div>
-        <div class="card-body">
-          <div class="card-name">종합비타민</div>
-          <div class="card-dose">1정</div>
-          <div class="card-tip">하루 2회 분할 복용 권장</div>
-        </div>
+        <div class="card-name">종합비타민</div>
+        <div class="card-dose">1정</div>
         <div class="card-tag tag-green">면역</div>
+        <div class="card-tip">하루 2회 분할 복용 권장 — 아침과 저녁 한 번씩</div>
       </div>
       <div class="card" id="card-omega">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-omega')"></div>
         <div class="card-icon">🐟</div>
-        <div class="card-body">
-          <div class="card-name">오메가3</div>
-          <div class="card-dose">1캡슐</div>
-          <div class="card-tip">저녁 지방 식사와 함께 → 흡수율 & 중성지방 억제 효과 최적</div>
-        </div>
+        <div class="card-name">오메가3</div>
+        <div class="card-dose">1캡슐</div>
         <div class="card-tag tag-orange">혈행</div>
+        <div class="card-tip">저녁 지방 식사와 함께 — 흡수율과 중성지방 억제 효과 최적</div>
       </div>
       <div class="card" id="card-iron">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-iron')"></div>
         <div class="card-icon">🩸</div>
-        <div class="card-body">
-          <div class="card-name">철분제 (Gentle Iron)</div>
-          <div class="card-dose">1캡슐 · 25mg</div>
-          <div class="card-tip">비타민C 음료와 함께 → 흡수율 ↑<br>커피·녹차·마그네슘은 2시간 간격 유지</div>
-        </div>
+        <div class="card-name">철분제 (Gentle Iron)</div>
+        <div class="card-dose">1캡슐 · 25mg</div>
         <div class="card-tag tag-orange">빈혈</div>
+        <div class="card-tip">비타민C 음료와 함께 — 흡수율 ↑ · 커피·녹차·마그네슘은 2시간 간격 유지</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 취침 전 -->
-  <div class="time-block">
-    <div class="time-header">
-      <div class="time-dot night"></div>
-      <div class="time-label">취침 전</div>
-      <div class="time-line"></div>
-      <div class="time-badge">저녁 식후 2시간 후</div>
+  <!-- ===== v. 취침 전 (저녁 식후 2시간) ===== -->
+  <section class="time-block">
+    <div class="time-marker">
+      <div class="time-roman">v.</div>
+      <div class="time-info">
+        <div class="time-label">취침 전</div>
+        <div class="time-badge">식후 2시간</div>
+      </div>
     </div>
     <div class="cards">
       <div class="card" id="card-mag">
-        <div class="check-btn" onclick="toggleCheck(this, 'card-mag')"></div>
         <div class="card-icon">🌙</div>
-        <div class="card-body">
-          <div class="card-name">마그네슘 (글리시네이트)</div>
-          <div class="card-dose">2정 · 200mg</div>
-          <div class="card-tip">수면 질 개선 & 근육 이완 효과<br>철분제와 최소 2시간 간격 필수</div>
-        </div>
-        <div class="card-tag tag-dark">수면·근육</div>
+        <div class="card-name">마그네슘 (글리시네이트)</div>
+        <div class="card-dose">2정 · 200mg</div>
+        <div class="card-tag tag-dark">수면 · 근육</div>
+        <div class="card-tip">수면 질 개선과 근육 이완 — 철분제와 최소 2시간 간격 필수</div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 주의사항 -->
-  <div class="warning-box">
-    <div class="warning-title">⚠ 주의사항</div>
-    <ul class="warning-list">
-      <li>철분 + 마그네슘은 같은 시간에 복용 금지 (흡수 방해) — 최소 2시간 간격</li>
-      <li>철분 복용 전후 1시간은 커피·녹차·홍차 피하기 (타닌이 흡수 방해)</li>
-      <li>유산균 + 항생제 복용 중이라면 최소 2시간 간격</li>
-      <li>철분 복용 시 비타민C 음료(오렌지주스 등)와 함께 → 흡수율 30% 향상</li>
-    </ul>
-  </div>
+  <!-- ===== Caveat — 피하기 / 돕기 두 갈래 ===== -->
+  <aside class="warning-box">
 
-  <div class="footer">
-    <p>모든 영양제는 꾸준히 복용할 때 효과가 나타납니다<br>이상 반응 시 즉시 중단하고 의사와 상담하세요</p>
-    <button class="reset-btn" onclick="resetAll()">오늘 체크 초기화</button>
-  </div>
+    <div class="warning-group is-avoid">
+      <div class="warning-group-title">
+        <span class="warning-mark">✕</span>
+        함께 먹으면 안 되는 것들
+      </div>
+      <ul class="warning-list">
+        <li>철분 + 마그네슘 — 흡수 방해, 최소 2시간 간격</li>
+        <li>철분 + 커피·녹차·홍차 — 타닌이 흡수를 막아요, 전후 1시간 피하기</li>
+        <li>철분 + 칼슘 — 흡수 경쟁, 2시간 간격</li>
+        <li>유산균 + 항생제 — 항생제가 균을 죽임, 최소 2시간 간격</li>
+      </ul>
+    </div>
+
+    <div class="warning-group is-help">
+      <div class="warning-group-title">
+        <span class="warning-mark">✓</span>
+        함께 먹으면 좋은 것들
+      </div>
+      <ul class="warning-list">
+        <li>철분 + 비타민C 음료(오렌지주스 등) — 흡수율 30% 향상</li>
+        <li>마그네슘 + 비타민D — 비타민D 활성화에 마그네슘이 필요해요</li>
+        <li>오메가3 + 저녁 지방 식사 — 흡수율과 중성지방 억제 효과 최적</li>
+        <li>지용성 비타민(A·D·E·K) + 식사 중 지방 — 흡수율 ↑</li>
+      </ul>
+    </div>
+
+  </aside>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <p class="footer-text-kor">모든 영양제는 꾸준히 복용할 때 효과가 나타납니다<br>이상 반응 시 즉시 중단하고 의사·약사와 상담하세요</p>
+    <button class="reset-btn" id="reset-btn">오늘 체크 초기화</button>
+  </footer>
 
 </div>
 
 <script>
-  function toggleCheck(btn, cardId) {
-    btn.classList.toggle('checked');
-    document.getElementById(cardId).classList.toggle('checked-card');
+  /* ============================================================
+     영양제 체크리스트 인터랙션
+     - 카드 전체가 클릭 영역 (모바일 탭 친화)
+     - 체크 시 dust 파티클 + 진행률 도트 + 손그림 가로선
+     - 자정에 체크 자동 초기화 (날짜 비교)
+     - DAY · NNN 일자 카운터 (첫 사용일부터 누적)
+     - localStorage 키는 기존 그대로 유지 (호환성)
+     ============================================================ */
+
+  const cards = document.querySelectorAll('.card');
+  const TOTAL = cards.length;
+
+  // 진행률 표시 영역 초기화
+  document.getElementById('progress-total').textContent = TOTAL;
+  const progressRow = document.getElementById('progress-row');
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot';
+    progressRow.appendChild(dot);
+  }
+  const dots = progressRow.children;
+  const progressNow = document.getElementById('progress-now');
+
+  /* DAY · NNN — 첫 사용일을 startDate에 저장하고 매일 누적
+     체크 상태와 무관, 단순히 "이 앱을 며칠째 쓰고 있나" 표시 */
+  function updateDayNumber() {
+    let start = localStorage.getItem('startDate');
+    if (!start) {
+      start = new Date().toDateString();
+      try { localStorage.setItem('startDate', start); } catch(e) {}
+    }
+    const startMs = new Date(start).getTime();
+    const todayMs = new Date(new Date().toDateString()).getTime();
+    const dayNum = Math.max(1, Math.floor((todayMs - startMs) / 86400000) + 1);
+    document.getElementById('day-num').textContent = String(dayNum).padStart(3, '0');
+  }
+  updateDayNumber();
+
+  /* 진행률 갱신 — DOM의 checked 클래스를 진행률 도트와 숫자에 반영 */
+  function updateProgress() {
+    let count = 0;
+    for (let i = 0; i < TOTAL; i++) {
+      const isChecked = cards[i].classList.contains('checked-card');
+      dots[i].classList.toggle('filled', isChecked);
+      if (isChecked) count++;
+    }
+    progressNow.textContent = count;
+  }
+
+  /* dust 파티클 — 체크 시 카드 좌상단 부근에서 6개 입자가 위로 흩어짐 */
+  function spawnDust(cardEl) {
+    const rect = cardEl.getBoundingClientRect();
+    const baseX = rect.left + 28;
+    const baseY = rect.top + rect.height / 2;
+    for (let i = 0; i < 6; i++) {
+      const p = document.createElement('div');
+      const dx = (Math.random() - 0.5) * 28;
+      p.style.cssText = `
+        position: fixed;
+        left: ${baseX + (Math.random() - 0.5) * 18}px;
+        top: ${baseY + (Math.random() - 0.5) * 8}px;
+        width: ${2 + Math.random() * 2}px;
+        height: ${2 + Math.random() * 2}px;
+        background: ${i % 2 ? 'var(--clay-light)' : 'var(--clay)'};
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 200;
+        opacity: 0;
+        --dx: ${dx}px;
+        animation: dust ${0.6 + Math.random() * 0.25}s ease-out forwards;
+        animation-delay: ${Math.random() * 60}ms;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1100);
+    }
+  }
+
+  /* 체크 토글 — 카드 전체 클릭 시 호출됨 */
+  function toggleCheck(cardEl) {
+    const willCheck = !cardEl.classList.contains('checked-card');
+    cardEl.classList.toggle('checked-card', willCheck);
+    if (willCheck) spawnDust(cardEl);
     saveState();
+    updateProgress();
   }
 
+  /* 모든 카드를 한 번에 초기화 (localStorage도 비움) */
   function resetAll() {
-    document.querySelectorAll('.check-btn').forEach(btn => btn.classList.remove('checked'));
-    document.querySelectorAll('.card').forEach(card => card.classList.remove('checked-card'));
-    localStorage.removeItem('supplementChecks');
+    cards.forEach(card => card.classList.remove('checked-card'));
+    try { localStorage.removeItem('supplementChecks'); } catch(e) {}
+    updateProgress();
   }
 
+  /* localStorage 영속화
+     - 키 'supplementChecks' (인덱스 → boolean) 그대로 유지
+     - 카드 순서가 동일하면 기존 사용자의 체크 상태 그대로 살아남음 */
   function saveState() {
     const state = {};
-    document.querySelectorAll('.check-btn').forEach((btn, i) => {
-      state[i] = btn.classList.contains('checked');
+    cards.forEach((card, i) => {
+      state[i] = card.classList.contains('checked-card');
     });
     try { localStorage.setItem('supplementChecks', JSON.stringify(state)); } catch(e) {}
   }
@@ -537,30 +893,36 @@
   function loadState() {
     try {
       const state = JSON.parse(localStorage.getItem('supplementChecks') || '{}');
-      document.querySelectorAll('.check-btn').forEach((btn, i) => {
-        if (state[i]) {
-          btn.classList.add('checked');
-          btn.closest('.card').classList.add('checked-card');
-        }
+      cards.forEach((card, i) => {
+        if (state[i]) card.classList.add('checked-card');
       });
     } catch(e) {}
   }
 
-  // 날짜가 바뀌면 자동 초기화
+  // 카드 전체 영역에 클릭 이벤트 위임 (인라인 onclick 제거 — PRINCIPLE.md §5)
+  cards.forEach(card => {
+    card.addEventListener('click', () => toggleCheck(card));
+  });
+
+  // 초기화 버튼
+  document.getElementById('reset-btn').addEventListener('click', resetAll);
+
+  // 자정 자동 초기화: 마지막 저장일과 오늘이 다르면 체크만 비움
+  // (startDate는 그대로 유지 — DAY 카운터가 누적되도록)
   const today = new Date().toDateString();
   const savedDate = localStorage.getItem('scheduleDate');
   if (savedDate !== today) {
-    localStorage.setItem('scheduleDate', today);
-    localStorage.removeItem('supplementChecks');
+    try {
+      localStorage.setItem('scheduleDate', today);
+      localStorage.removeItem('supplementChecks');
+    } catch(e) {}
   } else {
     loadState();
   }
+  updateProgress();
 
-  // ============== Service Worker 등록 ==============
-  // PWA 오프라인 지원을 위해 Service Worker를 등록합니다.
-  // - 'serviceWorker' 지원 여부를 먼저 확인 (구형 브라우저 호환성)
-  // - 페이지 load 이후에 등록해서 초기 로딩 성능에 영향 없도록 함
-  // - localhost가 아닌 https에서만 동작 (Vercel은 자동 https라 OK)
+  /* ============== Service Worker 등록 ==============
+     PWA 오프라인 지원. 기존 코드 그대로 유지. */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js')
@@ -568,7 +930,6 @@
         .catch(err => console.log('[SW] 등록 실패:', err));
     });
   }
-  // ===============================================
 </script>
 </body>
 </html>
