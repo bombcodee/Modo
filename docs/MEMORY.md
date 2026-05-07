@@ -32,6 +32,21 @@
 
 ## 히스토리
 
+### 2026-05-07 — 첫 배포 (GitHub + Vercel)
+
+- **요청**: "vercel에 올린다던지 그전에 깃헙에 올린다던지 — 다음 스탭 플랜을 짜고 순서대로 쭉 진행하자"
+- **결정/실행**:
+  - 정적 자산을 `assets/icons/`로 분리하고 [index.html](../index.html) / [manifest.json](../manifest.json) / [sw.js](../sw.js)의 경로 참조를 모두 갱신. SW scope 제약 때문에 `index.html` / `sw.js` / `manifest.json`은 루트 고정.
+  - 배포 경로는 **GitHub → Vercel 자동 배포**(사용자 선택). CLI 직접 배포보다 이력 보존·이후 수정 효율이 우선.
+  - 저장소는 **Public**(사용자 선택) — 추후 민감 데이터 추가 시 별도 데이터 파일을 `.gitignore`로 제외하기로.
+  - 첫 커밋 `5ddcd03`로 문서 체계 + 코드 + 정리된 아이콘 구조를 한 번에 푸시.
+- **영향 범위**:
+  - 신규: `.gitignore`, `assets/icons/` (3개 PNG 이동), GitHub 저장소 `bombcodee/Modo`
+  - 수정: [index.html](../index.html), [manifest.json](../manifest.json), [sw.js](../sw.js)의 아이콘 경로 / [README.md](../README.md) 라이브 링크 추가 / [docs/STRUCTURE.md](STRUCTURE.md), [docs/LOADMAP.md](LOADMAP.md) 갱신
+  - 외부: 라이브 URL 발급 — **https://modo-puce.vercel.app/**
+- **연결**: [LOADMAP.md](LOADMAP.md) M1 마일스톤 (iPhone 실기 검증 2개 항목만 사용자 손에 남음)
+- **알아둘 것**: 다음 코드 변경 후 배포 시 [sw.js](../sw.js)의 `CACHE_VERSION`을 `'v1'` → `'v2'`로 올려야 사용자(=본인) 기기의 SW 캐시가 갱신됨.
+
 ### 2026-05-07 — 프로젝트 문서 체계 수립
 
 - **요청**: "CLAUDE.md를 만들고, docs 폴더 안에 PRINCIPLE/MEMORY/LOADMAP/STRUCTURE 4종을 만들어 프로젝트가 짜임새 있게 연결되도록 해라. 코드는 로봇 팔다리 구조처럼 객체화하고, 모든 함수·클래스에는 왜·무엇·상관관계 주석을 달도록 PRINCIPLE에 명시할 것."

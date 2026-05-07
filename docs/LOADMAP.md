@@ -132,13 +132,14 @@
 `#infra` — 코드는 준비됐으니 외부에서 접속 가능하게 만든다.
 
 - [x] ~~`assets/icons/`로 아이콘 정리 + index.html / manifest.json / sw.js 경로 갱신~~
-- [ ] `.gitignore` 추가 (`.vercel/`, `.DS_Store`, `node_modules/`, `*.log`)
-- [ ] 로컬 서버로 PWA 동작 검증 (`python -m http.server 8000` → DevTools Application 탭에서 SW 등록·캐시 확인)
-- [ ] `git init` + 첫 커밋
-- [ ] GitHub 저장소 생성 + push (private 권장 — 본인용 데이터/이력이 들어갈 수 있음)
-- [ ] Vercel ↔ GitHub 연동 → 자동 배포
-- [ ] 배포된 URL을 iPhone Safari에서 열어 "홈 화면에 추가" 검증
-- [ ] 비행기모드 ON 후 홈 화면 아이콘으로 다시 열어 오프라인 동작 확인
+- [x] ~~`.gitignore` 추가 (`.vercel/`, `.DS_Store`, `node_modules/`, `*.log`, `.vscode/` 등)~~
+- [x] ~~로컬 경로 정합성 검증 (HTML/manifest/sw.js의 참조 ↔ 실제 파일 위치 일치 확인)~~
+- [x] ~~`git init` + 첫 커밋~~ (5ddcd03)
+- [x] ~~GitHub 저장소 생성 + push~~ — https://github.com/bombcodee/Modo (Public, 사용자 결정)
+- [x] ~~Vercel ↔ GitHub 연동 → 자동 배포~~ — https://modo-puce.vercel.app/
+- [x] ~~배포된 자원 HTTP 검증 완료~~ (6/6 200 OK, 경로 모두 정합)
+- [ ] iPhone Safari에서 열어 "홈 화면에 추가" 검증 (사용자 직접)
+- [ ] 비행기모드 ON 후 홈 화면 아이콘으로 다시 열어 오프라인 동작 확인 (사용자 직접)
 
 ---
 
