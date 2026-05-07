@@ -110,17 +110,17 @@
   .header-eyebrow {
     font-family: 'DM Mono', monospace;
     font-weight: 400;
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 0.42em;
     text-transform: uppercase;
     color: var(--moss-light);
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
 
   .header-title {
     font-family: 'Noto Serif KR', serif;
     font-weight: 400;
-    font-size: 38px;
+    font-size: 34px;
     line-height: 1.15;
     letter-spacing: -0.02em;
     color: var(--ink);
@@ -135,9 +135,9 @@
   .header-korean {
     font-family: 'Noto Serif KR', serif;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--ink-mute);
-    margin-top: 12px;
+    margin-top: 10px;
     letter-spacing: 0.01em;
   }
 
@@ -153,7 +153,7 @@
 
   .day-counter {
     font-family: 'DM Mono', 'Noto Serif KR', monospace;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.08em;
     color: var(--ink-mute);
   }
@@ -162,7 +162,7 @@
     font-family: 'DM Mono', monospace;
     font-weight: 500;
     color: var(--ink);
-    font-size: 12px;
+    font-size: 11px;
     letter-spacing: 0.12em;
     margin: 0 2px;
   }
@@ -171,7 +171,7 @@
     font-family: 'Fraunces', serif;
     font-weight: 400;
     font-variation-settings: "opsz" 18;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--ink-soft);
   }
 
@@ -180,7 +180,7 @@
     font-style: italic;
     font-variation-settings: "opsz" 18, "SOFT" 80;
     color: var(--clay);
-    font-size: 16px;
+    font-size: 14px;
     margin-right: 1px;
   }
 
@@ -195,8 +195,8 @@
   }
 
   .progress-dot {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     border: 1.2px solid var(--ink-faint);
     background: transparent;
@@ -223,39 +223,35 @@
   .time-block:nth-of-type(4) { animation-delay: 0.48s; }
   .time-block:nth-of-type(5) { animation-delay: 0.58s; }
 
+  /* 시간 마커 — flex 한 줄. dot은 카드 좌측 외곽선(x=0)에 정렬,
+     라벨은 dot 바로 옆 작은 gap으로 붙는다. divider는 카드와 같은 폭을 가진다. */
   .time-marker {
     display: flex;
-    align-items: baseline;
-    gap: 14px;
-    padding-left: 4px;
-  }
-
-  .time-roman {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    font-weight: 400;
-    font-variation-settings: "opsz" 36, "SOFT" 80;
-    font-size: 22px;
-    color: var(--clay);
-    flex-shrink: 0;
-    letter-spacing: -0.01em;
-    line-height: 1;
-    transform: translateY(-1px);
-  }
-
-  .time-info {
-    flex: 1;
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
+    align-items: center;
+    gap: 13px;
+    padding: 0 18px 11px 2px;
     border-bottom: 1px solid var(--paper-edge);
-    padding-bottom: 11px;
   }
+
+  /* 시간대별 색상 동그라미 — 텍스트 baseline 중앙 정렬 */
+  .time-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .dot-morning   { color: var(--ochre); }       /* 기상 직후 — 새벽 황토 */
+  .dot-breakfast { color: var(--moss-light); }  /* 아침 식사 30분 전 — 밝은 이끼 */
+  .dot-lunch     { color: var(--moss); }        /* 아침 식사 중/후 — 진한 이끼 */
+  .dot-dinner    { color: var(--clay); }        /* 저녁 식사 중/후 — 따뜻한 점토 */
+  .dot-night     { color: var(--night); }       /* 취침 전 — 깊은 밤 */
 
   .time-label {
+    flex: 1;
     font-family: 'Noto Serif KR', serif;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--ink);
     font-weight: 400;
     letter-spacing: 0.005em;
@@ -263,11 +259,12 @@
 
   .time-badge {
     font-family: 'Noto Serif KR', 'DM Mono', serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 300;
     letter-spacing: 0.08em;
     color: var(--ink-mute);
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
   /* ===== Cards ========================================== */
@@ -275,7 +272,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 14px 0 0 4px;
+    padding: 14px 0 0 0;
   }
 
   .card {
@@ -321,9 +318,9 @@
        고정 크기 flex 박스로 감싸서 모든 아이콘을 동일한 셀 안에 중앙 정렬한다 */
     grid-column: 1;
     grid-row: 1 / span 2;
-    width: 30px;
-    height: 26px;
-    font-size: 22px;
+    width: 28px;
+    height: 24px;
+    font-size: 20px;
     line-height: 1;
     align-self: start;
     margin-top: 2px;
@@ -342,7 +339,7 @@
     grid-row: 1;
     align-self: baseline;
     font-family: 'Noto Serif KR', serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--ink);
     letter-spacing: -0.005em;
@@ -371,7 +368,7 @@
     grid-column: 2;
     grid-row: 2;
     font-family: 'Noto Serif KR', 'DM Mono', serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
     color: var(--clay);
     letter-spacing: 0.02em;
@@ -384,11 +381,11 @@
     align-self: baseline;
     justify-self: end;
     font-family: 'Noto Serif KR', 'DM Mono', serif;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 400;
     letter-spacing: 0.04em;
-    padding: 3px 10px;
-    min-width: 52px;
+    padding: 3px 9px;
+    min-width: 48px;
     text-align: center;
     border-radius: 100px;
     border: 0.5px solid currentColor;
@@ -407,7 +404,7 @@
     grid-column: 2 / span 2;
     grid-row: 3;
     font-family: 'Noto Serif KR', serif;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--ink-mute);
     line-height: 1.6;
     font-weight: 300;
@@ -458,7 +455,7 @@
     background: var(--paper);
     padding: 0 10px;
     font-family: 'Noto Serif KR', serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 500;
     letter-spacing: 0.4em;
     color: var(--clay);
@@ -477,7 +474,7 @@
     gap: 9px;
     font-family: 'Noto Serif KR', serif;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 0.02em;
     margin-bottom: 12px;
   }
@@ -489,10 +486,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     flex-shrink: 0;
     line-height: 1;
@@ -510,11 +507,11 @@
 
   .warning-list li {
     font-family: 'Noto Serif KR', serif;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--ink-soft);
     line-height: 1.7;
     font-weight: 300;
-    padding-left: 18px;
+    padding-left: 16px;
     position: relative;
   }
 
@@ -523,7 +520,7 @@
     position: absolute;
     left: 0;
     top: 0;
-    font-size: 10px;
+    font-size: 9px;
   }
 
   /* 그룹별 불릿 색조 차이 — 클레이(피하기) vs 이끼(돕기) */
@@ -542,7 +539,7 @@
   .footer-text-kor {
     font-family: 'Noto Serif KR', serif;
     font-style: normal;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--ink-mute);
     margin-bottom: 18px;
     line-height: 1.7;
@@ -553,9 +550,9 @@
     background: transparent;
     border: 0.8px solid var(--paper-edge);
     border-radius: 100px;
-    padding: 10px 24px;
+    padding: 9px 22px;
     font-family: 'Noto Serif KR', serif;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.18em;
     color: var(--ink-mute);
@@ -583,21 +580,19 @@
 
   /* ===== Mobile refinements ============================ */
   @media (max-width: 480px) {
-    body { padding: 28px 16px 60px; }
-    .header-eyebrow { font-size: 9px; letter-spacing: 0.36em; margin-bottom: 14px; }
-    .header-title { font-size: 30px; line-height: 1.18; }
-    .header-korean { font-size: 13px; margin-top: 10px; }
-    .meta-row { margin-top: 24px; padding-bottom: 12px; }
-    .progress-row { gap: 7px; margin-top: 14px; }
-    .progress-dot { width: 9px; height: 9px; }
-    .time-block { margin-top: 30px; }
-    .time-roman { font-size: 19px; }
-    .time-marker { gap: 12px; }
-    .card { padding: 14px 16px 14px 14px; column-gap: 12px; }
-    .cards .card:nth-child(odd)  { margin-right: 4px; }
-    .cards .card:nth-child(even) { margin-left: 4px; }
-    .warning-box { padding: 24px 18px 20px; margin-top: 44px; }
-    .footer { margin-top: 36px; }
+    body { padding: 26px 16px 56px; }
+    .header-eyebrow { font-size: 8px; letter-spacing: 0.36em; margin-bottom: 13px; }
+    .header-title { font-size: 27px; line-height: 1.18; }
+    .header-korean { font-size: 12px; margin-top: 9px; }
+    .meta-row { margin-top: 22px; padding-bottom: 11px; }
+    .progress-row { gap: 7px; margin-top: 13px; }
+    .progress-dot { width: 8px; height: 8px; }
+    .time-block { margin-top: 28px; }
+    .time-marker { padding: 0 14px 10px 2px; gap: 12px; }
+    .time-dot { width: 8px; height: 8px; }
+    .card { padding: 13px 14px 13px 13px; column-gap: 11px; }
+    .warning-box { padding: 22px 16px 18px; margin-top: 40px; }
+    .footer { margin-top: 32px; }
   }
 
   @media (min-width: 600px) {
@@ -632,14 +627,12 @@
     </div>
   </header>
 
-  <!-- ===== i. 기상 직후 (공복) ===== -->
+  <!-- ===== 기상 직후 (공복) ===== -->
   <section class="time-block">
     <div class="time-marker">
-      <div class="time-roman">i.</div>
-      <div class="time-info">
-        <div class="time-label">기상 직후</div>
-        <div class="time-badge">공복</div>
-      </div>
+      <span class="time-dot dot-morning" aria-hidden="true"></span>
+      <span class="time-label">기상 직후</span>
+      <span class="time-badge">공복</span>
     </div>
     <div class="cards">
       <div class="card" id="card-mastic">
@@ -652,14 +645,12 @@
     </div>
   </section>
 
-  <!-- ===== ii. 아침 식사 30분 전 (공복) ===== -->
+  <!-- ===== 아침 식사 30분 전 (공복) ===== -->
   <section class="time-block">
     <div class="time-marker">
-      <div class="time-roman">ii.</div>
-      <div class="time-info">
-        <div class="time-label">아침 식사 30분 전</div>
-        <div class="time-badge">공복</div>
-      </div>
+      <span class="time-dot dot-breakfast" aria-hidden="true"></span>
+      <span class="time-label">아침 식사 30분 전</span>
+      <span class="time-badge">공복</span>
     </div>
     <div class="cards">
       <div class="card" id="card-probiotics">
@@ -672,14 +663,12 @@
     </div>
   </section>
 
-  <!-- ===== iii. 아침 식사 중/후 (식사와 함께) ===== -->
+  <!-- ===== 아침 식사 중/후 (식사와 함께) ===== -->
   <section class="time-block">
     <div class="time-marker">
-      <div class="time-roman">iii.</div>
-      <div class="time-info">
-        <div class="time-label">아침 식사 중 / 후</div>
-        <div class="time-badge">식후</div>
-      </div>
+      <span class="time-dot dot-lunch" aria-hidden="true"></span>
+      <span class="time-label">아침 식사 중 / 후</span>
+      <span class="time-badge">식후</span>
     </div>
     <div class="cards">
       <div class="card" id="card-multi">
@@ -692,14 +681,12 @@
     </div>
   </section>
 
-  <!-- ===== iv. 저녁 식사 중/후 (식사와 함께) ===== -->
+  <!-- ===== 저녁 식사 중/후 (식사와 함께) ===== -->
   <section class="time-block">
     <div class="time-marker">
-      <div class="time-roman">iv.</div>
-      <div class="time-info">
-        <div class="time-label">저녁 식사 중 / 후</div>
-        <div class="time-badge">식후</div>
-      </div>
+      <span class="time-dot dot-dinner" aria-hidden="true"></span>
+      <span class="time-label">저녁 식사 중 / 후</span>
+      <span class="time-badge">식후</span>
     </div>
     <div class="cards">
       <div class="card" id="card-multi2">
@@ -726,14 +713,12 @@
     </div>
   </section>
 
-  <!-- ===== v. 취침 전 (저녁 식후 2시간) ===== -->
+  <!-- ===== 취침 전 (저녁 식후 2시간) ===== -->
   <section class="time-block">
     <div class="time-marker">
-      <div class="time-roman">v.</div>
-      <div class="time-info">
-        <div class="time-label">취침 전</div>
-        <div class="time-badge">식후 2시간</div>
-      </div>
+      <span class="time-dot dot-night" aria-hidden="true"></span>
+      <span class="time-label">취침 전</span>
+      <span class="time-badge">식후 2시간</span>
     </div>
     <div class="cards">
       <div class="card" id="card-mag">
